@@ -55,8 +55,9 @@ class EmpPostActivity : AppCompatActivity() {
         val userId = intent.getStringExtra("userId")?.toInt()
 
         val postId = intent.getIntExtra("postId", 0)
-        val call = retrofitInterface.executeComment2(postId)
-        val adapter = Comment1_Adapter(postId)
+        val profId = intent.getIntExtra("profId", 0)
+        val call = retrofitInterface.executeComment1(postId)
+        val adapter = Comment1_Adapter(userId!!, profId)
 
         call!!.enqueue(object : Callback<ArrayList<Comment_1>> {
             override fun onResponse(call: Call<ArrayList<Comment_1>>, response: Response<ArrayList<Comment_1>>) {
@@ -97,7 +98,7 @@ class EmpPostActivity : AppCompatActivity() {
             }
         }
 
-        val profId = intent.getIntExtra("profId", 0)
+
         val nickname = intent.getStringExtra("nickname")
         var allJob = HashMap<Int, String>()
 
@@ -164,7 +165,9 @@ class EmpPostActivity : AppCompatActivity() {
                     profile = response.body()
 
                     val intent = Intent(act, ProfileActivity::class.java)
-                    intent.putExtra("realted_user_id", profile?.related_user_id)
+                    intent.putExtra("userId", userId!!.toInt())
+                    Log.d("EmpProfId", profId.toString())
+                    intent.putExtra("related_user_id", profId)
                     intent.putExtra("nick", profile?.nickname)
                     intent.putExtra("introduction", profile?.introduction)
                     intent.putParcelableArrayListExtra("jobs", profile?.jobs)
@@ -202,6 +205,15 @@ class EmpPostActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
                     Log.d("log",response.toString())
                     Log.d("log", response.body().toString())
+                    try {
+                        val Intent = getIntent()
+                        finish()
+                        overridePendingTransition(0, 0)
+                        startActivity(intent)
+                        overridePendingTransition(0, 0)
+                    } catch(e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
 
                 override fun onFailure(call: Call<PostResult>, t: Throwable) {
